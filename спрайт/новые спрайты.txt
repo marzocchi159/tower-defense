@@ -3,16 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dota 2 Tower Defense: Масштабная Битва</title>
+    <title>Защита Древних - TD</title>
+    
+    <!-- Подключение Tailwind для интерфейса игры -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Подключение шрифтов для главного меню -->
     <style>
-        body { 
-            margin: 0; background-color: #1a1a1a; color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center; min-height: 100vh;
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Trajan+Pro:wght@400;700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
         }
+
+        /* ============================
+           СТИЛИ ГЛАВНОГО МЕНЮ
+           ============================ */
+        #menu-ui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 9999;
+            font-family: 'Cinzel', serif;
+            transition: opacity 1s ease;
+        }
+
+        #intro-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 1s ease-out;
+        }
+
+        #intro-screen h1 {
+            font-size: 24px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+            color: #c4a052;
+            text-shadow: 0 0 10px rgba(196, 160, 82, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.5; transform: scale(0.98); }
+        }
+
+        #main-menu {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('глав меню.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            padding-right: 10%;
+            box-sizing: border-box;
+        }
+
+        #main-menu::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
+        }
+
+        .game-title {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            z-index: 2;
+            text-align: left;
+        }
+
+        .game-title h1 {
+            margin: 0;
+            font-size: 60px;
+            color: #ececec;
+            text-shadow: 2px 2px 4px #000, 0 0 20px rgba(139, 92, 246, 0.6);
+            letter-spacing: 2px;
+        }
+
+        .game-title h2 {
+            margin: -10px 0 0 0;
+            font-size: 30px;
+            color: #c4a052;
+            letter-spacing: 8px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .menu-container {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+        }
+
+        #settings-panel {
+            z-index: 2;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+            background: rgba(20, 22, 28, 0.95);
+            border: 1px solid #3a4052;
+            border-left: 4px solid #c4a052;
+            padding: 25px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+        }
+
+        #settings-panel h3 {
+            margin: 0 0 10px 0;
+            color: #ececec;
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .setting-group label {
+            color: #b0b5c9;
+            font-size: 16px;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+        }
+
+        #menu-ui-layer input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        #menu-ui-layer input[type=range]:focus {
+            outline: none;
+        }
+        #menu-ui-layer input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #c4a052;
+            cursor: pointer;
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(196, 160, 82, 0.5);
+        }
+        #menu-ui-layer input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #3a4052;
+            border-radius: 2px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(90deg, rgba(30, 34, 43, 0.9), rgba(20, 22, 28, 0.9));
+            border: 1px solid #3a4052;
+            border-left: 4px solid #5a637d;
+            color: #b0b5c9;
+            padding: 15px 30px;
+            font-size: 22px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-align: left;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+        }
+
+        .menu-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+        }
+
+        .menu-btn:hover::after {
+            left: 200%;
+        }
+
+        .menu-btn:hover {
+            color: #fff;
+            border-left-color: #c4a052;
+            border-top-color: #5a637d;
+            border-bottom-color: #5a637d;
+            border-right-color: #5a637d;
+            background: linear-gradient(90deg, rgba(40, 45, 58, 0.9), rgba(25, 28, 36, 0.9));
+            box-shadow: 0 0 15px rgba(196, 160, 82, 0.3), inset 0 0 10px rgba(0,0,0,0.5);
+            transform: translateX(-5px);
+        }
+
+        .menu-btn:active {
+            transform: translateX(0);
+            border-left-color: #8f7233;
+        }
+
+        .play-btn {
+            border-left: 4px solid #8b5cf6;
+            color: #d8b4e2;
+            font-size: 26px;
+            padding: 20px 30px;
+        }
+
+        .play-btn:hover {
+            border-left-color: #a78bfa;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        /* ============================
+           СТИЛИ ИГРОВОГО ДВИЖКА
+           ============================ */
         .game-wrapper {
             position: relative;
             width: 100%;
@@ -20,6 +255,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #fff;
         }
         .game-container {
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
@@ -37,10 +273,10 @@
         }
         
         #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; z-index: 10; }
-        .panel { background: rgba(15, 15, 25, 0.9); padding: 15px; border-radius: 12px; border: 1px solid #333; pointer-events: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
-        .tower-btn { display: flex; flex-direction: column; align-items: center; background: #2a2a40; border: 2px solid transparent; padding: 10px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; width: 140px; }
-        .tower-btn:hover { background: #3a3a50; }
-        .tower-btn.selected { border-color: #4CAF50; background: #2a3a2a; }
+        .game-panel { background: rgba(15, 15, 25, 0.9); padding: 15px; border-radius: 12px; border: 1px solid #333; pointer-events: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        .game-tower-btn { display: flex; flex-direction: column; align-items: center; background: #2a2a40; border: 2px solid transparent; padding: 10px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; width: 140px; }
+        .game-tower-btn:hover { background: #3a3a50; }
+        .game-tower-btn.selected { border-color: #4CAF50; background: #2a3a2a; }
         .btn-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
         
         .sniper-color { color: #ff8a80; }
@@ -58,12 +294,53 @@
 </head>
 <body>
 
+    <!-- СЛОЙ ГЛАВНОГО МЕНЮ -->
+    <div id="menu-ui-layer">
+        <!-- Стартовый экран-заглушка для автоплея -->
+        <div id="intro-screen">
+            <h1>Нажмите для запуска</h1>
+        </div>
+
+        <!-- Основное меню -->
+        <div id="main-menu">
+            <div class="game-title">
+                <h1>ЗАЩИТА</h1>
+                <h2>ДРЕВНИХ</h2>
+            </div>
+
+            <!-- Кнопки главного меню -->
+            <div class="menu-container" id="main-buttons">
+                <button class="menu-btn play-btn" onclick="startGameTransition()">Играть</button>
+                <button class="menu-btn" onmouseenter="playHoverSound()" onclick="openSettings()">Настройки</button>
+                <button class="menu-btn" onmouseenter="playHoverSound()">Выход</button>
+            </div>
+
+            <!-- Панель настроек -->
+            <div id="settings-panel">
+                <h3>Настройки звука</h3>
+                
+                <div class="setting-group">
+                    <label for="music-vol">Музыка: <span id="music-vol-val">50%</span></label>
+                    <input type="range" id="music-vol" min="0" max="1" step="0.01" value="0.5">
+                </div>
+
+                <div class="setting-group">
+                    <label for="sfx-vol">Эффекты: <span id="sfx-vol-val">100%</span></label>
+                    <input type="range" id="sfx-vol" min="0" max="1" step="0.01" value="0.1">
+                </div>
+
+                <button class="menu-btn" onmouseenter="playHoverSound()" onclick="closeSettings()" style="margin-top: 10px; font-size: 18px; padding: 10px 20px; text-align: center;">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- СЛОЙ ИГРЫ (Отрисовывается под меню, активируется после старта) -->
     <div class="game-wrapper">
         <div class="game-container">
             <canvas id="gameCanvas" width="4800" height="3600"></canvas>
             
             <div id="ui-container">
-                <div class="panel flex flex-col gap-2">
+                <div class="game-panel flex flex-col gap-2">
                     <h2 class="text-2xl font-bold text-yellow-400 mb-2">Статус</h2>
                     <div class="text-xl">Золото: <span id="gold-display" class="text-yellow-300 font-bold">250</span>g</div>
                     <div class="text-xl">Трон: <span id="throne-hp-display" class="text-red-400 font-bold">500</span> / 500</div>
@@ -73,25 +350,25 @@
 
                 <div class="flex flex-col gap-4 items-end">
                     <button class="pause-btn" onclick="window.togglePause()">Пауза (P)</button>
-                    <div class="panel flex flex-col items-center">
+                    <div class="game-panel flex flex-col items-center">
                         <h2 class="text-xl font-bold mb-4">Башни / Герои</h2>
                         
-                        <button class="tower-btn selected" id="btn-sniper" onclick="window.selectTower('sniper')">
+                        <button class="game-tower-btn selected" id="btn-sniper" onclick="window.selectTower('sniper')">
                             <div class="btn-title sniper-color">Sniper</div>
                             <div class="text-sm">Стоимость: 50g</div>
                             <div class="text-xs text-gray-400 text-center">Физ. урон<br>(Вне дороги)</div>
                         </button>
-                        <button class="tower-btn" id="btn-cm" onclick="window.selectTower('cm')">
+                        <button class="game-tower-btn" id="btn-cm" onclick="window.selectTower('cm')">
                             <div class="btn-title cm-color">Maiden</div>
                             <div class="text-sm">Стоимость: 40g</div>
                             <div class="text-xs text-gray-400 text-center">Замедление<br>(Вне дороги)</div>
                         </button>
-                        <button class="tower-btn" id="btn-axe" onclick="window.selectTower('axe')">
+                        <button class="game-tower-btn" id="btn-axe" onclick="window.selectTower('axe')">
                             <div class="btn-title axe-color">Axe</div>
                             <div class="text-sm">Стоимость: 50g</div>
                             <div class="text-xs text-gray-400 text-center">Танк<br>(На дорогу)</div>
                         </button>
-                        <button class="tower-btn" id="btn-dazzle" onclick="window.selectTower('dazzle')">
+                        <button class="game-tower-btn" id="btn-dazzle" onclick="window.selectTower('dazzle')">
                             <div class="btn-title dazzle-color">Dazzle</div>
                             <div class="text-sm">Стоимость: 40g</div>
                             <div class="text-xs text-gray-400 text-center">Хил<br>(Вне дороги)</div>
@@ -100,6 +377,7 @@
                 </div>
             </div>
 
+            <!-- Модальные окна игры -->
             <div id="pause-menu" class="modal">
                 <div class="modal-content">
                     <h1 class="text-5xl text-white font-bold mb-4">ПАУЗА</h1>
@@ -112,47 +390,149 @@
                 <div class="modal-content">
                     <h1 class="text-6xl text-red-600 font-bold mb-4">ТРОН УПАЛ</h1>
                     <p class="text-2xl text-gray-300 mb-6">Силы Тьмы разрушили вашу базу.</p>
-                    <button class="modal-btn" onclick="location.reload()">Играть снова</button>
-                </div>
-            </div>
-
-            <div id="main-menu" class="modal" style="display: flex;">
-                <div class="modal-content">
-                    <h1 class="text-6xl text-yellow-500 font-bold mb-4">DOTA 2 TOWER DEFENSE</h1>
-                    <p class="text-2xl text-gray-300 mb-6">Защитите Трон от сил Тьмы!<br>Строй героев, улучшай оборону и побеждай Боссов.</p>
-                    <button class="modal-btn" style="background: #4CAF50; font-size: 28px; padding: 20px 50px;" onclick="window.startGame()">НАЧАТЬ ИГРУ</button>
+                    <button class="modal-btn" onclick="location.reload()">В Главное меню</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- СКРИПТЫ: ЛОГИКА МЕНЮ И ИГРЫ -->
     <script>
+        /* =======================================
+           ЧАСТЬ 1: ЛОГИКА МЕНЮ И ЗВУКА
+           ======================================= */
+        let sfxVolume = 0.1;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // --- МЕНЕДЖЕР АУДИО ФАЙЛОВ ---
+        const menuMusic = new Audio('menu_music.mp3');
+        menuMusic.loop = true;
+
+        const gameMusic = new Audio('background.mp3');
+        gameMusic.loop = true;
+
+        const axeSound = new Audio('axe.mp3');
+        // -----------------------------
+
+        function playHoverSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (sfxVolume <= 0) return;
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            
+            gainNode.gain.setValueAtTime(sfxVolume / 2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            
+            osc.start(now);
+            osc.stop(now + 0.1);
+        }
+
+        const introScreen = document.getElementById('intro-screen');
+        const mainMenu = document.getElementById('main-menu');
+
+        introScreen.addEventListener('click', () => {
+            let initialVol = parseFloat(document.getElementById('music-vol').value);
+            menuMusic.volume = initialVol;
+            gameMusic.volume = initialVol;
+            
+            menuMusic.play().catch(error => console.log("Автоплей всё ещё заблокирован:", error));
+            
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            introScreen.style.opacity = '0';
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+                mainMenu.style.opacity = '1';
+            }, 1000);
+        });
+
+        const musicSlider = document.getElementById('music-vol');
+        const sfxSlider = document.getElementById('sfx-vol');
+        const musicValDisplay = document.getElementById('music-vol-val');
+        const sfxValDisplay = document.getElementById('sfx-vol-val');
+
+        musicSlider.addEventListener('input', (e) => {
+            const vol = e.target.value;
+            menuMusic.volume = vol;
+            gameMusic.volume = vol;
+            musicValDisplay.innerText = Math.round(vol * 100) + '%';
+        });
+
+        sfxSlider.addEventListener('input', (e) => {
+            sfxVolume = parseFloat(e.target.value);
+            sfxValDisplay.innerText = Math.round((e.target.value / 0.1) * 100) + '%';
+        });
+
+        function openSettings() {
+            playHoverSound();
+            document.getElementById('main-buttons').style.display = 'none';
+            document.getElementById('settings-panel').style.display = 'flex';
+        }
+
+        function closeSettings() {
+            playHoverSound();
+            document.getElementById('settings-panel').style.display = 'none';
+            document.getElementById('main-buttons').style.display = 'flex';
+        }
+
+        function startGameTransition() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (sfxVolume > 0) {
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(250, now + 0.2);
+                gainNode.gain.setValueAtTime(sfxVolume, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                osc.start(now); osc.stop(now + 0.3);
+            }
+
+            const btn = document.querySelector('.play-btn');
+            btn.innerText = "ЗАГРУЗКА...";
+            btn.style.pointerEvents = "none";
+            btn.style.color = "#c4a052";
+            
+            // Скрытие меню и передача управления игре
+            setTimeout(() => {
+                const menuLayer = document.getElementById('menu-ui-layer');
+                menuLayer.style.opacity = '0';
+                setTimeout(() => {
+                    menuLayer.style.display = 'none';
+                    // ЗАПУСК ИГРЫ И ПЕРЕКЛЮЧЕНИЕ МУЗЫКИ
+                    window.startGameLogic();
+                }, 1000);
+            }, 500);
+        }
+
+        /* =======================================
+           ЧАСТЬ 2: ЛОГИКА ИГРЫ
+           ======================================= */
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // ЗАГРУЗКА СПРАЙТОВ
         const images = {
-            axe: new Image(),
-            boss: new Image(),
-            cm: new Image(),
-            creep_fat: new Image(),
-            creep_swordsman: new Image(),
-            dazzle: new Image(),
-            wolf: new Image(),
-            throne: new Image(),
-            sniper: new Image(),
-            map: new Image()
+            axe: new Image(), boss: new Image(), cm: new Image(),
+            creep_fat: new Image(), creep_swordsman: new Image(), dazzle: new Image(),
+            wolf: new Image(), throne: new Image(), sniper: new Image(), map: new Image()
         };
-        images.axe.src = 'axe.png';
-        images.boss.src = 'boss.png';
-        images.cm.src = 'CM.png';
-        images.creep_fat.src = 'creep_fat.png';
-        images.creep_swordsman.src = 'creep_swordsman.png';
-        images.dazzle.src = 'dazzle.png';
-        images.wolf.src = 'Lycan_Wolf.png';
-        images.throne.src = 'radiant_base.png';
-        images.sniper.src = 'sniper.png';
-        images.map.src = 'map.png';
+        images.axe.src = 'axe.png'; images.boss.src = 'boss.png'; images.cm.src = 'CM.png';
+        images.creep_fat.src = 'creep_fat.png'; images.creep_swordsman.src = 'creep_swordsman.png';
+        images.dazzle.src = 'dazzle.png'; images.wolf.src = 'Lycan_Wolf.png';
+        images.throne.src = 'radiant_base.png'; images.sniper.src = 'sniper.png'; images.map.src = 'map.png';
 
         const SCALE = 4.5; 
         const PATH_WIDTH = 250; 
@@ -166,7 +546,6 @@
             End:     [ {x: 3600, y: 2100}, {x: 3600, y: 2400}, {x: 3600, y: 2700}, {x: 3600, y: 3000} ],
             I3:      {x: 4200, y: 2550}, 
             Throne:  {x: 4560, y: 2550},
-
             TowerSpots: [
                 {x: 2100, y: 900}, {x: 3000, y: 1320}, {x: 2850, y: 2280}, {x: 3990, y: 2040}, {x: 4100, y: 2940}  
             ]
@@ -178,9 +557,7 @@
         Nodes.End.forEach(e => { pathSegments.push({p1: Nodes.I2, p2: e}); pathSegments.push({p1: e, p2: Nodes.I3}); });
         pathSegments.push({p1: Nodes.I3, p2: Nodes.Throne});
 
-        function getRandomNode(nodeArray) {
-            return nodeArray[Math.floor(Math.random() * nodeArray.length)];
-        }
+        function getRandomNode(nodeArray) { return nodeArray[Math.floor(Math.random() * nodeArray.length)]; }
 
         function distToSegment(p, v, w) {
             let l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
@@ -192,32 +569,14 @@
 
         function isPath(x, y) {
             let p = {x, y};
-            for (let seg of pathSegments) {
-                if (distToSegment(p, seg.p1, seg.p2) < PATH_WIDTH) {
-                    return true;
-                }
-            }
+            for (let seg of pathSegments) { if (distToSegment(p, seg.p1, seg.p2) < PATH_WIDTH) return true; }
             return false;
         }
 
-        let gold = 250;
-        let throneHp = 500;
-        let maxThroneHp = 500;
-        let currentWave = 0;
-        let selectedTowerType = 'sniper';
-        let isPaused = false;
-        let gameOver = false;
-        let gameStarted = false;
-
-        let towers = [];
-        let creeps = [];
-        let projectiles = [];
-        let visualEffects = [];
-        let spawnQueue = [];
-        let spawnTimer = 0;
-        
-        let waveTimer = 300; 
-        let waveActive = false;
+        let gold = 250; let throneHp = 500; let maxThroneHp = 500; let currentWave = 0;
+        let selectedTowerType = 'sniper'; let isPaused = false; let gameOver = false; let gameStarted = false;
+        let towers = []; let creeps = []; let projectiles = []; let visualEffects = []; let spawnQueue = [];
+        let spawnTimer = 0; let waveTimer = 300; let waveActive = false;
 
         const TOWER_TYPES = {
             'sniper': { type: 'ranged', cost: 50, range: 160 * SCALE, damage: 15, fireRate: 40, projSpeed: 8 * SCALE, color: '#ff8a80', radius: 15 * SCALE, placeOnPath: false, sprite: 'sniper' },
@@ -228,7 +587,7 @@
 
         window.selectTower = function(type) {
             selectedTowerType = type;
-            document.querySelectorAll('.tower-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.game-tower-btn').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('btn-' + type).classList.add('selected');
         };
 
@@ -239,151 +598,92 @@
         };
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
-                if (gameStarted) window.togglePause();
-            }
+            if ((e.key === 'p' || e.key === 'P' || e.key === 'Escape') && gameStarted) window.togglePause();
         });
 
-        window.startGame = function() {
-            document.getElementById('main-menu').style.display = 'none';
+        // Функция активации логики игры, вызываемая из UI меню
+        window.startGameLogic = function() {
             gameStarted = true;
+            // ПЕРЕКЛЮЧЕНИЕ ФОНОВОЙ МУЗЫКИ
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+            gameMusic.play().catch(e => console.log("Ошибка воспроизведения боевой музыки:", e));
         };
 
         function generateWave(waveNum) {
             let queue = [];
             let numCreeps = 10 + waveNum * 2; 
             let isBossWave = (waveNum % 10 === 0);
-
             if (isBossWave) numCreeps += 2; 
 
             for (let i = 0; i < numCreeps; i++) {
                 let startNode = getRandomNode(Nodes.Starts);
-                
                 let isHeavy = (waveNum >= 4 && i % 4 === 0); 
                 let isFast = (waveNum >= 7 && i % 5 === 0 && !isHeavy);
                 let isSiege = (waveNum >= 8 && i % 10 === 0);
 
-                if (isBossWave && i === numCreeps - 1) {
-                    queue.push({ type: 'boss', delay: 150, startNode: startNode });
-                } else if (isSiege) {
-                    queue.push({ type: 'siege', delay: 80, startNode: startNode }); 
-                } else if (isHeavy) {
-                    queue.push({ type: 'heavy', delay: 50, startNode: startNode }); 
-                } else if (isFast) {
-                    queue.push({ type: 'fast', delay: 20, startNode: startNode }); 
-                } else {
-                    queue.push({ type: 'normal', delay: 35, startNode: startNode }); 
-                }
+                if (isBossWave && i === numCreeps - 1) queue.push({ type: 'boss', delay: 150, startNode: startNode });
+                else if (isSiege) queue.push({ type: 'siege', delay: 80, startNode: startNode }); 
+                else if (isHeavy) queue.push({ type: 'heavy', delay: 50, startNode: startNode }); 
+                else if (isFast) queue.push({ type: 'fast', delay: 20, startNode: startNode }); 
+                else queue.push({ type: 'normal', delay: 35, startNode: startNode }); 
             }
             if (queue.length > 0) queue[0].delay = 0;
             return queue;
         }
 
         class FloatingText {
-            constructor(x, y, text, color) {
-                this.x = x; this.y = y; this.text = text; this.color = color;
-                this.life = 40; this.maxLife = 40;
-            }
+            constructor(x, y, text, color) { this.x = x; this.y = y; this.text = text; this.color = color; this.life = 40; this.maxLife = 40; }
             update() { this.y -= 1.5; this.life--; }
-            draw(ctx) {
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.life / this.maxLife;
-                ctx.font = "bold 48px Arial";
-                ctx.fillText(this.text, this.x, this.y);
-                ctx.globalAlpha = 1.0;
-            }
+            draw(ctx) { ctx.fillStyle = this.color; ctx.globalAlpha = this.life / this.maxLife; ctx.font = "bold 48px Arial"; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha = 1.0; }
         }
 
         class HealBeamEffect {
-            constructor(x1, y1, target, amount) {
-                this.x1 = x1; this.y1 = y1; this.target = target;
-                this.life = 15; this.maxLife = 15;
-            }
+            constructor(x1, y1, target, amount) { this.x1 = x1; this.y1 = y1; this.target = target; this.life = 15; this.maxLife = 15; }
             update() { this.life--; }
-            draw(ctx) {
-                ctx.strokeStyle = "#e040fb"; ctx.lineWidth = 12;
-                ctx.globalAlpha = this.life / this.maxLife;
-                ctx.beginPath(); ctx.moveTo(this.x1, this.y1); ctx.lineTo(this.target.x, this.target.y); ctx.stroke();
-                ctx.globalAlpha = 1.0;
-            }
+            draw(ctx) { ctx.strokeStyle = "#e040fb"; ctx.lineWidth = 12; ctx.globalAlpha = this.life / this.maxLife; ctx.beginPath(); ctx.moveTo(this.x1, this.y1); ctx.lineTo(this.target.x, this.target.y); ctx.stroke(); ctx.globalAlpha = 1.0; }
         }
 
         class AxeAttackEffect {
-            constructor(x, y, radius) {
-                this.x = x; this.y = y; this.radius = radius;
-                this.life = 15; this.maxLife = 15;
-            }
+            constructor(x, y, radius) { this.x = x; this.y = y; this.radius = radius; this.life = 15; this.maxLife = 15; }
             update() { this.life--; }
-            draw(ctx) {
-                ctx.strokeStyle = "#ff5252"; ctx.lineWidth = 10;
-                ctx.globalAlpha = this.life / this.maxLife;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * (1 - this.life/this.maxLife), 0, Math.PI * 2); ctx.stroke();
-                ctx.globalAlpha = 1.0;
-            }
+            draw(ctx) { ctx.strokeStyle = "#ff5252"; ctx.lineWidth = 10; ctx.globalAlpha = this.life / this.maxLife; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * (1 - this.life/this.maxLife), 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1.0; }
         }
 
         class Creep {
             constructor(waveParams) {
-                this.path = [
-                    waveParams.startNode, Nodes.I1, 
-                    getRandomNode(Nodes.Mid), Nodes.I2, 
-                    getRandomNode(Nodes.End), Nodes.I3, 
-                    Nodes.Throne
-                ];
-                this.currentWaypoint = 0;
-                this.waveType = waveParams.type;
-                
-                this.offsetX = (Math.random() - 0.5) * (PATH_WIDTH * 0.8);
-                this.offsetY = (Math.random() - 0.5) * (PATH_WIDTH * 0.8);
-                
-                this.x = this.path[0].x + this.offsetX;
-                this.y = this.path[0].y + this.offsetY;
-                
-                this.isBoss = false;
-                this.reachedEnd = false;
+                this.path = [ waveParams.startNode, Nodes.I1, getRandomNode(Nodes.Mid), Nodes.I2, getRandomNode(Nodes.End), Nodes.I3, Nodes.Throne ];
+                this.currentWaypoint = 0; this.waveType = waveParams.type;
+                this.offsetX = (Math.random() - 0.5) * (PATH_WIDTH * 0.8); this.offsetY = (Math.random() - 0.5) * (PATH_WIDTH * 0.8);
+                this.x = this.path[0].x + this.offsetX; this.y = this.path[0].y + this.offsetY;
+                this.isBoss = false; this.reachedEnd = false;
 
                 if (waveParams.type === 'boss') {
-                    this.hp = 2000 + (currentWave * 300); 
-                    this.speed = 0.5 * SCALE; this.reward = 150; this.radius = 35 * SCALE; this.color = "#b71c1c"; this.damage = 150; 
-                    this.isBoss = true;
+                    this.hp = 2000 + (currentWave * 300); this.speed = 0.5 * SCALE; this.reward = 150; this.radius = 35 * SCALE; this.color = "#b71c1c"; this.damage = 150; this.isBoss = true;
                 } else if (waveParams.type === 'heavy') {
-                    this.hp = 300 + (currentWave * 70);
-                    this.speed = 0.8 * SCALE; this.reward = 15; this.radius = 20 * SCALE; this.color = "#8e24aa"; this.damage = 25;
+                    this.hp = 300 + (currentWave * 70); this.speed = 0.8 * SCALE; this.reward = 15; this.radius = 20 * SCALE; this.color = "#8e24aa"; this.damage = 25;
                 } else if (waveParams.type === 'fast') {
-                    this.hp = 50 + (currentWave * 12);
-                    this.speed = (2.5 + (currentWave * 0.05)) * SCALE; this.reward = 6; this.radius = 8 * SCALE; this.color = "#00bcd4"; this.damage = 5;
+                    this.hp = 50 + (currentWave * 12); this.speed = (2.5 + (currentWave * 0.05)) * SCALE; this.reward = 6; this.radius = 8 * SCALE; this.color = "#00bcd4"; this.damage = 5;
                 } else if (waveParams.type === 'siege') {
-                    this.hp = 500 + (currentWave * 80);
-                    this.speed = 0.6 * SCALE; this.reward = 25; this.radius = 25 * SCALE; this.color = "#ffeb3b"; this.damage = 50;
+                    this.hp = 500 + (currentWave * 80); this.speed = 0.6 * SCALE; this.reward = 25; this.radius = 25 * SCALE; this.color = "#ffeb3b"; this.damage = 50;
                 } else {
-                    this.hp = 80 + (currentWave * 15);
-                    this.speed = (1.2 + (currentWave * 0.05)) * SCALE; this.reward = 8; this.radius = 12 * SCALE; this.color = "#ffb74d"; this.damage = 10;
+                    this.hp = 80 + (currentWave * 15); this.speed = (1.2 + (currentWave * 0.05)) * SCALE; this.reward = 8; this.radius = 12 * SCALE; this.color = "#ffb74d"; this.damage = 10;
                 }
                 
                 this.maxHp = this.hp; this.baseSpeed = this.speed;
-                this.slowTimer = 0;
-                this.blockedBy = null;
-                this.attackTimer = 0;
+                this.slowTimer = 0; this.blockedBy = null; this.attackTimer = 0;
             }
 
             update() {
-                if (this.slowTimer > 0) { this.slowTimer--; } else { this.speed = this.baseSpeed; }
-
+                if (this.slowTimer > 0) this.slowTimer--; else this.speed = this.baseSpeed;
                 if (this.blockedBy) {
                     let distToAxe = Math.hypot(this.blockedBy.x - this.x, this.blockedBy.y - this.y);
-                    if (this.blockedBy.hp <= 0 || distToAxe > (60 * SCALE)) {
-                        this.blockedBy = null;
-                    }
+                    if (this.blockedBy.hp <= 0 || distToAxe > (60 * SCALE)) this.blockedBy = null;
                 }
-
                 if (!this.blockedBy) {
                     for (let t of towers) {
                         if (t.typeInfo.type === 'melee' && t.hp > 0) {
-                            let dist = Math.hypot(t.x - this.x, t.y - this.y);
-                            if (dist < 45 * SCALE) {
-                                this.blockedBy = t;
-                                break;
-                            }
+                            if (Math.hypot(t.x - this.x, t.y - this.y) < 45 * SCALE) { this.blockedBy = t; break; }
                         }
                     }
                 }
@@ -393,45 +693,25 @@
                         this.blockedBy.hp -= this.damage; 
                         visualEffects.push(new FloatingText(this.blockedBy.x, this.blockedBy.y - 40, `-${this.damage}`, '#ff0000'));
                         this.attackTimer = 60; 
-                    } else {
-                        this.attackTimer--;
-                    }
+                    } else this.attackTimer--;
                     return; 
                 }
 
                 let target = this.path[this.currentWaypoint + 1];
                 if (!target) {
-                    this.hp = 0;
-                    this.reachedEnd = true;
-                    
-                    throneHp -= this.damage;
-                    if (throneHp < 0) throneHp = 0;
-                    
+                    this.hp = 0; this.reachedEnd = true;
+                    throneHp -= this.damage; if (throneHp < 0) throneHp = 0;
                     document.getElementById('throne-hp-display').innerText = throneHp;
                     visualEffects.push(new FloatingText(this.x, this.y, `-${this.damage} Трон!`, '#ff0000'));
-                    
-                    if (throneHp <= 0) {
-                        gameOver = true;
-                        document.getElementById('game-over-modal').style.display = 'flex';
-                    }
+                    if (throneHp <= 0) { gameOver = true; document.getElementById('game-over-modal').style.display = 'flex'; }
                     return;
                 }
                 
-                let targetX = target.x + this.offsetX;
-                let targetY = target.y + this.offsetY;
-                
-                let dx = targetX - this.x;
-                let dy = targetY - this.y;
-                let dist = Math.hypot(dx, dy);
+                let targetX = target.x + this.offsetX; let targetY = target.y + this.offsetY;
+                let dx = targetX - this.x; let dy = targetY - this.y; let dist = Math.hypot(dx, dy);
 
-                if (dist < this.speed) {
-                    this.x = targetX;
-                    this.y = targetY;
-                    this.currentWaypoint++;
-                } else {
-                    this.x += (dx / dist) * this.speed;
-                    this.y += (dy / dist) * this.speed;
-                }
+                if (dist < this.speed) { this.x = targetX; this.y = targetY; this.currentWaypoint++; } 
+                else { this.x += (dx / dist) * this.speed; this.y += (dy / dist) * this.speed; }
             }
 
             draw(ctx) {
@@ -441,38 +721,18 @@
                 else if (this.waveType === 'fast') sprite = images.wolf;
                 else sprite = images.creep_swordsman;
 
+                let size = this.radius * 2.8;
                 if (sprite && sprite.complete && sprite.naturalWidth !== 0) {
-                    let size = this.radius * 2.8;
-                    
-                    if (this.slowTimer > 0) {
-                        ctx.fillStyle = "rgba(132, 255, 255, 0.4)";
-                        ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
-                    }
-
+                    if (this.slowTimer > 0) { ctx.fillStyle = "rgba(132, 255, 255, 0.4)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); }
                     ctx.drawImage(sprite, this.x - size/2, this.y - size/2, size, size);
-
-                    if (this.isBoss) {
-                        ctx.fillStyle = "white"; ctx.font = "bold 36px Arial"; ctx.textAlign = "center";
-                        ctx.fillText("BOSS", this.x, this.y - size/2 - 10);
-                    }
                 } else {
-                    ctx.fillStyle = (this.slowTimer > 0) ? "#84ffff" : this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.strokeStyle = "#333";
-                    ctx.lineWidth = 4;
-                    ctx.stroke();
-
-                    if (this.isBoss) {
-                        ctx.fillStyle = "white"; ctx.font = "bold 36px Arial"; ctx.textAlign = "center";
-                        ctx.fillText("BOSS", this.x, this.y + 12);
-                    }
+                    ctx.fillStyle = (this.slowTimer > 0) ? "#84ffff" : this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = "#333"; ctx.lineWidth = 4; ctx.stroke();
                 }
 
-                // Health bar
-                const barWidth = 120;
-                const barHeight = 16;
+                if (this.isBoss) { ctx.fillStyle = "white"; ctx.font = "bold 36px Arial"; ctx.textAlign = "center"; ctx.fillText("BOSS", this.x, this.y - size/2 - 10); }
+
+                const barWidth = 120; const barHeight = 16;
                 ctx.fillStyle = "red"; ctx.fillRect(this.x - barWidth/2, this.y - this.radius - 30, barWidth, barHeight);
                 ctx.fillStyle = "#4CAF50"; ctx.fillRect(this.x - barWidth/2, this.y - this.radius - 30, barWidth * (this.hp / this.maxHp), barHeight);
             }
@@ -480,75 +740,58 @@
 
         class Tower {
             constructor(x, y, typeInfo) {
-                this.x = x; this.y = y;
-                this.rallyX = x; this.rallyY = y; 
-                this.hp = typeInfo.maxHp || 0;
-                this.maxHp = typeInfo.maxHp || 0;
-                this.typeInfo = typeInfo;
-                this.cooldownTimer = 0;
+                this.x = x; this.y = y; this.rallyX = x; this.rallyY = y; 
+                this.hp = typeInfo.maxHp || 0; this.maxHp = typeInfo.maxHp || 0;
+                this.typeInfo = typeInfo; this.cooldownTimer = 0;
             }
-
             findTarget() {
-                for (let c of creeps) {
-                    if (Math.hypot(c.x - this.x, c.y - this.y) <= this.typeInfo.range) return c;
-                }
+                for (let c of creeps) { if (Math.hypot(c.x - this.x, c.y - this.y) <= this.typeInfo.range) return c; }
                 return null;
             }
-
             findMeleeTargets() {
                 let targets = [];
-                for (let c of creeps) {
-                    if (Math.hypot(c.x - this.rallyX, c.y - this.rallyY) <= this.typeInfo.engagementRange) targets.push(c);
-                }
+                for (let c of creeps) { if (Math.hypot(c.x - this.rallyX, c.y - this.rallyY) <= this.typeInfo.engagementRange) targets.push(c); }
                 return targets;
             }
-
             findHealTarget() {
-                let lowestHpAlly = null;
-                let lowestHpPercent = 1.0;
+                let lowestHpAlly = null; let lowestHpPercent = 1.0;
                 for (let t of towers) {
                     if (t.typeInfo.type === 'melee' && t.hp > 0 && t.hp < t.maxHp) {
                         if (Math.hypot(t.x - this.x, t.y - this.y) <= this.typeInfo.range) {
                             let hpPercent = t.hp / t.maxHp;
-                            if (hpPercent < lowestHpPercent) {
-                                lowestHpPercent = hpPercent;
-                                lowestHpAlly = t;
-                            }
+                            if (hpPercent < lowestHpPercent) { lowestHpPercent = hpPercent; lowestHpAlly = t; }
                         }
                     }
                 }
                 return lowestHpAlly;
             }
-
             update() {
                 if (this.typeInfo.type === 'melee') {
                     let targets = this.findMeleeTargets();
                     if (targets.length > 0) {
                         let target = targets[0]; 
                         let dx = target.x - this.x; let dy = target.y - this.y; let dist = Math.hypot(dx, dy);
-                        if (dist > 60) { 
-                            this.x += (dx / dist) * this.typeInfo.speed; 
-                            this.y += (dy / dist) * this.typeInfo.speed; 
-                        }
+                        if (dist > 60) { this.x += (dx / dist) * this.typeInfo.speed; this.y += (dy / dist) * this.typeInfo.speed; }
                         
                         if (this.cooldownTimer === 0) {
-                            targets.forEach(t => {
-                                if (Math.hypot(t.x - this.x, t.y - this.y) <= 80 * SCALE) t.hp -= this.typeInfo.damage;
-                            });
+                            targets.forEach(t => { if (Math.hypot(t.x - this.x, t.y - this.y) <= 80 * SCALE) t.hp -= this.typeInfo.damage; });
                             visualEffects.push(new AxeAttackEffect(this.x, this.y, 80 * SCALE));
+                            
+                            // ЗВУКОВОЙ ЭФФЕКТ УДАРА AXE
+                            if (sfxVolume > 0 && this.typeInfo.sprite === 'axe') {
+                                let axeSfx = axeSound.cloneNode(true); // Клонируем для наложения звуков
+                                axeSfx.volume = sfxVolume;
+                                axeSfx.play().catch(e => console.log("SFX error:", e));
+                            }
+
                             this.cooldownTimer = this.typeInfo.fireRate;
                         }
                     } else {
                         let dx = this.rallyX - this.x; let dy = this.rallyY - this.y; let dist = Math.hypot(dx, dy);
-                        if (dist > this.typeInfo.speed) { 
-                            this.x += (dx / dist) * this.typeInfo.speed; 
-                            this.y += (dy / dist) * this.typeInfo.speed; 
-                        } else { 
-                            this.x = this.rallyX; this.y = this.rallyY; 
-                        }
+                        if (dist > this.typeInfo.speed) { this.x += (dx / dist) * this.typeInfo.speed; this.y += (dy / dist) * this.typeInfo.speed; } 
+                        else { this.x = this.rallyX; this.y = this.rallyY; }
                     }
                     if (this.cooldownTimer > 0) this.cooldownTimer--;
-
                 } else if (this.typeInfo.type === 'healer') {
                     if (waveActive) {
                         if (this.cooldownTimer > 0) this.cooldownTimer--;
@@ -567,32 +810,17 @@
                     if (this.cooldownTimer === 0) {
                         let target = this.findTarget();
                         if (target) {
-                            // Огонь из центра героя
                             projectiles.push(new Projectile(this.x, this.y - 40, target, this.typeInfo));
                             this.cooldownTimer = this.typeInfo.fireRate;
                         }
                     }
                 }
             }
-
             draw(ctx) {
-                if (this.typeInfo.type === 'melee') {
-                    ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-                    ctx.lineWidth = 4;
-                    ctx.beginPath(); ctx.arc(this.rallyX, this.rallyY, this.typeInfo.engagementRange, 0, Math.PI * 2); ctx.stroke();
-                } 
-
-                let sprite = images[this.typeInfo.sprite];
-                let size = this.typeInfo.radius * 2.5;
-
-                if (sprite && sprite.complete && sprite.naturalWidth !== 0) {
-                    ctx.drawImage(sprite, this.x - size/2, this.y - size/2, size, size);
-                } else {
-                    ctx.fillStyle = this.typeInfo.color;
-                    ctx.beginPath(); ctx.arc(this.x, this.y, this.typeInfo.radius, 0, Math.PI * 2); ctx.fill();
-                    ctx.strokeStyle = "#fff"; ctx.lineWidth = 6; ctx.stroke();
-                }
-
+                if (this.typeInfo.type === 'melee') { ctx.strokeStyle = "rgba(255, 255, 255, 0.1)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(this.rallyX, this.rallyY, this.typeInfo.engagementRange, 0, Math.PI * 2); ctx.stroke(); } 
+                let sprite = images[this.typeInfo.sprite]; let size = this.typeInfo.radius * 2.5;
+                if (sprite && sprite.complete && sprite.naturalWidth !== 0) ctx.drawImage(sprite, this.x - size/2, this.y - size/2, size, size);
+                else { ctx.fillStyle = this.typeInfo.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.typeInfo.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 6; ctx.stroke(); }
                 if (this.typeInfo.type === 'melee' && this.hp > 0 && this.maxHp > 0) {
                     ctx.fillStyle = "red"; ctx.fillRect(this.x - 40, this.y - this.typeInfo.radius - 20, 80, 10);
                     ctx.fillStyle = "#4CAF50"; ctx.fillRect(this.x - 40, this.y - this.typeInfo.radius - 20, 80 * (this.hp / this.maxHp), 10);
@@ -601,40 +829,25 @@
         }
 
         class Projectile {
-            constructor(x, y, target, sourceInfo) {
-                this.x = x; this.y = y; this.target = target; this.sourceInfo = sourceInfo;
-            }
+            constructor(x, y, target, sourceInfo) { this.x = x; this.y = y; this.target = target; this.sourceInfo = sourceInfo; }
             update() {
                 if (this.target.hp <= 0) return false;
-                let dx = this.target.x - this.x; let dy = this.target.y - this.y;
-                let dist = Math.hypot(dx, dy);
+                let dx = this.target.x - this.x; let dy = this.target.y - this.y; let dist = Math.hypot(dx, dy);
                 if (dist < this.sourceInfo.projSpeed) {
                     this.target.hp -= this.sourceInfo.damage;
-                    if (this.sourceInfo.slowFactor) {
-                        this.target.speed = this.target.baseSpeed * this.sourceInfo.slowFactor;
-                        this.target.slowTimer = this.sourceInfo.slowDuration;
-                    }
+                    if (this.sourceInfo.slowFactor) { this.target.speed = this.target.baseSpeed * this.sourceInfo.slowFactor; this.target.slowTimer = this.sourceInfo.slowDuration; }
                     return false; 
                 }
-                this.x += (dx / dist) * this.sourceInfo.projSpeed;
-                this.y += (dy / dist) * this.sourceInfo.projSpeed;
+                this.x += (dx / dist) * this.sourceInfo.projSpeed; this.y += (dy / dist) * this.sourceInfo.projSpeed;
                 return true;
             }
-            draw(ctx) {
-                ctx.fillStyle = this.sourceInfo.color;
-                ctx.shadowBlur = 30; ctx.shadowColor = this.sourceInfo.color;
-                ctx.beginPath(); ctx.arc(this.x, this.y, 15, 0, Math.PI * 2); ctx.fill();
-                ctx.shadowBlur = 0;
-            }
+            draw(ctx) { ctx.fillStyle = this.sourceInfo.color; ctx.shadowBlur = 30; ctx.shadowColor = this.sourceInfo.color; ctx.beginPath(); ctx.arc(this.x, this.y, 15, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; }
         }
 
         function getCanvasCoordinates(e) {
             let rect = canvas.getBoundingClientRect();
-            let scaleX = canvas.width / rect.width;
-            let scaleY = canvas.height / rect.height;
-            let x = (e.clientX - rect.left) * scaleX;
-            let y = (e.clientY - rect.top) * scaleY;
-            
+            let scaleX = canvas.width / rect.width; let scaleY = canvas.height / rect.height;
+            let x = (e.clientX - rect.left) * scaleX; let y = (e.clientY - rect.top) * scaleY;
             let gridX = Math.floor(x / GRID_SIZE) * GRID_SIZE + GRID_SIZE / 2;
             let gridY = Math.floor(y / GRID_SIZE) * GRID_SIZE + GRID_SIZE / 2;
             return { gridX, gridY };
@@ -643,7 +856,6 @@
         canvas.addEventListener('click', function(e) {
             if (isPaused || gameOver || !gameStarted) return;
             let coords = getCanvasCoordinates(e);
-
             let typeInfo = TOWER_TYPES[selectedTowerType];
             let isOccupied = towers.some(t => t.x === coords.gridX && t.y === coords.gridY);
 
@@ -659,35 +871,22 @@
 
         canvas.addEventListener('mousemove', function(e) {
             if (isPaused || gameOver || !gameStarted) return;
-            let coords = getCanvasCoordinates(e);
-            window.hoverX = coords.gridX;
-            window.hoverY = coords.gridY;
+            let coords = getCanvasCoordinates(e); window.hoverX = coords.gridX; window.hoverY = coords.gridY;
         });
 
         function updateGame() {
             if (gameOver || !gameStarted) return;
-
             if (!waveActive) {
                 waveTimer--;
                 document.getElementById('wave-timer-display').innerText = `До волны: ${Math.ceil(waveTimer/60)} сек`;
                 if (waveTimer <= 0) {
-                    currentWave++;
-                    waveActive = true;
-                    spawnQueue = generateWave(currentWave);
+                    currentWave++; waveActive = true; spawnQueue = generateWave(currentWave);
                     document.getElementById('wave-display').innerText = currentWave;
                     document.getElementById('wave-timer-display').innerText = "Враги идут!";
                 }
             } else {
-                if (spawnQueue.length > 0) {
-                    spawnTimer++;
-                    if (spawnTimer >= spawnQueue[0].delay) {
-                        creeps.push(new Creep(spawnQueue.shift()));
-                        spawnTimer = 0;
-                    }
-                } else if (creeps.length === 0) {
-                    waveActive = false;
-                    waveTimer = 300; 
-                }
+                if (spawnQueue.length > 0) { spawnTimer++; if (spawnTimer >= spawnQueue[0].delay) { creeps.push(new Creep(spawnQueue.shift())); spawnTimer = 0; } }
+                else if (creeps.length === 0) { waveActive = false; waveTimer = 300; }
             }
 
             towers.forEach(t => t.update());
@@ -695,80 +894,49 @@
             projectiles = projectiles.filter(p => p.update());
 
             for (let i = creeps.length - 1; i >= 0; i--) {
-                let c = creeps[i];
-                c.update();
+                let c = creeps[i]; c.update();
                 if (c.hp <= 0 && !gameOver) {
-                    if (!c.reachedEnd) {
-                        gold += c.reward;
-                        document.getElementById('gold-display').innerText = gold;
-                        visualEffects.push(new FloatingText(c.x, c.y, `+${c.reward}g`, '#ffeb3b'));
-                    }
+                    if (!c.reachedEnd) { gold += c.reward; document.getElementById('gold-display').innerText = gold; visualEffects.push(new FloatingText(c.x, c.y, `+${c.reward}g`, '#ffeb3b')); }
                     creeps.splice(i, 1);
                 }
             }
-
-            visualEffects.forEach(v => v.update());
-            visualEffects = visualEffects.filter(v => v.life > 0);
+            visualEffects.forEach(v => v.update()); visualEffects = visualEffects.filter(v => v.life > 0);
         }
 
         function drawPaths() {
-            ctx.strokeStyle = '#222833';
-            ctx.lineWidth = PATH_WIDTH * 2;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-            
-            ctx.beginPath();
-            pathSegments.forEach(seg => {
-                ctx.moveTo(seg.p1.x, seg.p1.y);
-                ctx.lineTo(seg.p2.x, seg.p2.y);
-            });
-            ctx.stroke();
+            ctx.strokeStyle = '#222833'; ctx.lineWidth = PATH_WIDTH * 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+            ctx.beginPath(); pathSegments.forEach(seg => { ctx.moveTo(seg.p1.x, seg.p1.y); ctx.lineTo(seg.p2.x, seg.p2.y); }); ctx.stroke();
         }
 
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#11141a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#11141a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            if (images.map && images.map.complete && images.map.naturalWidth !== 0) {
-                ctx.drawImage(images.map, 0, 0, canvas.width, canvas.height);
-            } else {
-                drawPaths();
-            }
+            if (images.map && images.map.complete && images.map.naturalWidth !== 0) ctx.drawImage(images.map, 0, 0, canvas.width, canvas.height);
+            else drawPaths();
 
             Nodes.TowerSpots.forEach(spot => {
-                ctx.fillStyle = 'rgba(0, 255, 204, 0.05)';
-                ctx.strokeStyle = 'rgba(0, 255, 204, 0.3)';
-                ctx.lineWidth = 6;
-                ctx.fillRect(spot.x - 120, spot.y - 120, 240, 240);
-                ctx.strokeRect(spot.x - 120, spot.y - 120, 240, 240);
+                ctx.fillStyle = 'rgba(0, 255, 204, 0.05)'; ctx.strokeStyle = 'rgba(0, 255, 204, 0.3)'; ctx.lineWidth = 6;
+                ctx.fillRect(spot.x - 120, spot.y - 120, 240, 240); ctx.strokeRect(spot.x - 120, spot.y - 120, 240, 240);
             });
 
-            // Трон (Radiant Base)
             if (images.throne && images.throne.complete && images.throne.naturalWidth !== 0) {
-                let size = 450;
-                ctx.drawImage(images.throne, Nodes.Throne.x - size/2, Nodes.Throne.y - size/2, size, size);
+                let size = 450; ctx.drawImage(images.throne, Nodes.Throne.x - size/2, Nodes.Throne.y - size/2, size, size);
             } else {
-                ctx.fillStyle = '#ffaa00';
-                ctx.shadowBlur = 60; ctx.shadowColor = "red";
+                ctx.fillStyle = '#ffaa00'; ctx.shadowBlur = 60; ctx.shadowColor = "red";
                 ctx.beginPath(); ctx.arc(Nodes.Throne.x, Nodes.Throne.y, 160, 0, Math.PI*2); ctx.fill();
-                ctx.strokeStyle = "red"; ctx.lineWidth = 10; ctx.stroke();
-                ctx.shadowBlur = 0; 
+                ctx.strokeStyle = "red"; ctx.lineWidth = 10; ctx.stroke(); ctx.shadowBlur = 0; 
             }
 
             if (window.hoverX && window.hoverY && !isPaused && !gameOver && gameStarted) {
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.02)"; ctx.lineWidth = 2; ctx.beginPath();
                 for (let x = 0; x <= canvas.width; x += GRID_SIZE) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
                 for (let y = 0; y <= canvas.height; y += GRID_SIZE) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
                 ctx.stroke();
             }
 
-            towers.forEach(t => t.draw(ctx));
-            creeps.forEach(c => c.draw(ctx));
-            projectiles.forEach(p => p.draw(ctx));
-            visualEffects.forEach(v => v.draw(ctx));
+            towers.forEach(t => t.draw(ctx)); creeps.forEach(c => c.draw(ctx));
+            projectiles.forEach(p => p.draw(ctx)); visualEffects.forEach(v => v.draw(ctx));
 
             if (window.hoverX && window.hoverY && !isPaused && !gameOver && gameStarted) {
                 let typeInfo = TOWER_TYPES[selectedTowerType];
@@ -786,13 +954,12 @@
         }
 
         function gameLoop() {
-            if (!isPaused) {
-                updateGame();
-            }
+            if (!isPaused && gameStarted) updateGame();
             drawGame();
             requestAnimationFrame(gameLoop);
         }
 
+        // Запуск основного цикла анимации
         gameLoop();
     </script>
 </body>
